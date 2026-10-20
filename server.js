@@ -8,14 +8,17 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Groq API key environment variable se milegi.
-const API_KEY = process.env.GROQ_API_KEY;
+// Groq API Key
+const API_KEY = "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";
 
 app.post('/api/chat', async (req, res) => {
 try {
-if (!API_KEY) {
+if (
+!API_KEY ||
+API_KEY === "YAHAN_APNI_GROQ_API_KEY_DALEIN"
+) {
 return res.status(500).json({
-reply: "Groq API key configure nahi hai. GROQ_API_KEY set karein."
+reply: "Groq API key configure karein."
 });
 }
 
@@ -30,23 +33,24 @@ reply: "Groq API key configure nahi hai. GROQ_API_KEY set karein."
     const response = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
-            model: "llama-3.3-70b-versatile",
+            model: 'llama-3.3-70b-versatile',
             messages: [
                 {
-                    role: "system",
-                    content: "You are Super AI, an intelligent, helpful, and advanced assistant."
+                    role: 'system',
+                    content: 'You are Super AI, an intelligent, helpful, and advanced assistant. Reply in the language used by the user.'
                 },
                 {
-                    role: "user",
+                    role: 'user',
                     content: message
                 }
             ]
         },
         {
             headers: {
-                'Authorization': `Bearer ${API_KEY}`,
+                Authorization: `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            timeout: 60000
         }
     );
 
@@ -56,11 +60,12 @@ reply: "Groq API key configure nahi hai. GROQ_API_KEY set karein."
 
 } catch (error) {
     console.error(
+        'Groq API Error:',
         error.response?.data || error.message
     );
 
     res.status(500).json({
-        reply: "API Error: Groq API key aur server configuration check karein."
+        reply: 'AI server mein error aaya. API key, model aur server configuration check karein.'
     });
 }
 
